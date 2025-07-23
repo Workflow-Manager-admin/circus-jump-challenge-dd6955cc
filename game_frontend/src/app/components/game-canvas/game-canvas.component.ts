@@ -20,12 +20,23 @@ export class GameCanvasComponent implements AfterViewInit {
   private ctx!: CanvasRenderingContext2D;
   private animFrame: any = null;
 
+  // Service instances injected and assigned to public fields for Angular template binding
+  public gameSvc!: GameService;
+  public audioSvc!: GameAudioService;
+
   constructor(
-    public gameSvc: GameService,
-    public audioSvc: GameAudioService
-  ) {}
+    _gameSvc: GameService,
+    _audioSvc: GameAudioService
+  ) {
+    this.gameSvc = _gameSvc;
+    this.audioSvc = _audioSvc;
+  }
 
   ngAfterViewInit() {
+    // Dummy reference for linter so DI fields aren't marked unused
+    void this.gameSvc;
+    void this.audioSvc;
+
     this.ctx = this.canvasRef.nativeElement.getContext('2d')!;
     this.gameSvc.attachCanvas(this.canvasRef.nativeElement, this.ctx, this);
     this.resizeCanvas();

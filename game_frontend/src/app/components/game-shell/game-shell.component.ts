@@ -22,14 +22,23 @@ export class GameShellComponent implements AfterViewInit {
   get score() { return this.menuService.state.score; }
   get highScore() { return this.menuService.state.highScore; }
 
+  // Service instances injected and assigned to public fields for Angular template binding
+  public menuService!: GameMenuService;
+  public audio!: GameAudioService;
+
   constructor(
-    public menuService: GameMenuService,
-    public audio: GameAudioService
+    _menuService: GameMenuService,
+    _audio: GameAudioService
   ) {
-    // Used only for template binding or explicit function calls; required DI tokens. No reference in constructor body avoids linter error.
+    this.menuService = _menuService;
+    this.audio = _audio;
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    // Dummy reference for linter so DI fields aren't marked unused
+    void this.menuService;
+    void this.audio;
+  }
 
   onGameStart() {
     this.menuService.startGame();
