@@ -1,0 +1,69 @@
+<div class="shell-bg">
+  <!-- Top Status Bar -->
+  <div class="status-bar">
+    <div class="logo-title">
+      <span class="circus-logo">🎪</span>
+      <span class="title">Circus Jump Challenge</span>
+    </div>
+    <div class="score">
+      Score: <b>{{score}}</b>
+      &nbsp;|&nbsp;
+      High: <b>{{highScore}}</b>
+    </div>
+    <div class="mute-toggle">
+      <button (click)="onMuteToggle()" aria-label="Toggle sound"><span aria-hidden="true">🔊/🔇</span></button>
+    </div>
+  </div>
+
+  <!-- Overlays (menus and modals) -->
+  <div class="game-modal overlay" *ngIf="showMenu">
+    <div class="modal-content menu retro-border">
+      <h1>🎪 Circus Jump Challenge</h1>
+      <div>
+        <button class="retro-btn" (click)="onGameStart()">Start Game</button>
+        <button class="retro-btn" (click)="onShowInstructions()">Instructions</button>
+      </div>
+    </div>
+  </div>
+  <div class="game-modal overlay" *ngIf="showLevelComplete">
+    <div class="modal-content retro-border">
+      <h2>Level Complete!</h2>
+      <p>Congratulations!</p>
+      <button class="retro-btn" (click)="onGameRestart()">Restart</button>
+      <button class="retro-btn" (click)="onShowInstructions()">How to Play</button>
+    </div>
+  </div>
+  <div class="game-modal overlay" *ngIf="showGameOver">
+    <div class="modal-content retro-border">
+      <h2>Game Over</h2>
+      <p>Your Score: <b>{{score}}</b></p>
+      <button class="retro-btn" (click)="onGameRestart()">Restart</button>
+      <button class="retro-btn" (click)="onShowInstructions()">How to Play</button>
+    </div>
+  </div>
+  <div class="game-modal overlay instructions" *ngIf="showInstructions">
+    <div class="modal-content retro-border">
+      <h2>Instructions</h2>
+      <ul>
+        <li>Jump over obstacles to progress through the circus course!</li>
+        <li>Controls:
+          <ul>
+            <li><b>Left/Right:</b> Arrow keys / Swipe</li>
+            <li><b>Jump:</b> Spacebar / Tap / Up arrow / Touch control</li>
+          </ul>
+        </li>
+        <li>Avoid fire rings and animal obstacles.</li>
+        <li>You get more points for jumping multiple obstacles and reaching the end!</li>
+      </ul>
+      <button class="retro-btn" (click)="onCloseInstructions()">Back</button>
+    </div>
+  </div>
+
+  <!-- Main game canvas -->
+  <div class="game-canvas-wrapper">
+    <app-game-canvas
+      (gameOver)="menuService.onGameOver($event)"
+      (levelComplete)="menuService.onLevelComplete($event)">
+    </app-game-canvas>
+  </div>
+</div>
