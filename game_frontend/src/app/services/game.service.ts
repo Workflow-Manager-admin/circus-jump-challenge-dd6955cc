@@ -85,11 +85,36 @@ export class GameService {
   }
 
   // PUBLIC_INTERFACE
+  /**
+   * Resets ALL game state for a new game round.
+   * - Player is always fully stationary (zero velocity, no jump-in-progress) and placed at starting X,Y position.
+   * - All velocity, jumping, timers, objects, world offset, scores: fully reset.
+   * - No timers, movement, or state is persisted from previous games (guaranteed clean state).
+   * - Obstacles, win line, tick, worldOffset: all reset and deterministic except for obstacle movement, which can have slight randomness per new game.
+   * The player will NOT move at all (vx/vy=0) until key/touch input is received.
+   */
   init() {
+    // Hard reset of state object, including all primitives and nested objects.
     this.state = this.defaultState();
+    // Create a fresh obstacle list (no updating of existing; always new object instances)
     this.initObstacles();
+    // Defensive: clear any control states
+    this.controls.left = false;
+    this.controls.right = false;
+    this.controls.jump = false;
+    // Defensive: clear any touch in-progress
+    this.dragX = 0;
+    this.dragY = 0;
+    this.touched = false;
   }
 
+  /**
+   * Generates fully-initialized GameState object for a new game start.
+   * All state fields have explicit initial values.
+   * - Player starts at X=25, Y=186 (on the ground), velocity and jump params = 0/false.
+   * - World offset zero, obstacles empty till filled by initObstacles().
+   * - Scoring, tick, status flags, etc. initialized.
+   */
   private defaultState(): GameState {
     let highScore = 0;
     if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
@@ -112,6 +137,11 @@ export class GameService {
     };
   }
 
+  /**
+   * (Re)populates game obstacles for a new game round ONLY.
+   * Always creates new obstacle objects; never modifies old ones.
+   * Ensures obstacles state is always consistent and no obstacle status leaks between games.
+   */
   private initObstacles() {
     const obs: Obstacle[] = [];
     let pos = 125;
@@ -389,6 +419,11 @@ export class GameService {
     ctx.restore();
   }
 
+  /**
+   * Sets the player controls to start motion on first valid key.
+   * At new-game start: only after one of these functions is called will vx or vy become nonzero.
+   * Until then, the player is always stationary.
+   */
   onKeyDown(key: string) {
     if (key === 'ArrowLeft') this.controls.left = true;
     if (key === 'ArrowRight') this.controls.right = true;
@@ -402,6 +437,10 @@ export class GameService {
   private dragX = 0;
   private dragY = 0;
   private touched = false;
+  /**
+   * Touches control player on mobile.
+   * No movement will happen at new-game init until a touch event is received.
+   */
   onTouchStart(e: TouchEvent) {
     if (e.touches.length > 1) return;
     this.dragX = e.touches[0].clientX;
@@ -412,6 +451,7 @@ export class GameService {
     if (!this.touched || e.touches.length > 1) return;
     let dx = e.touches[0].clientX - this.dragX;
     let dy = e.touches[0].clientY - this.dragY;
+    // Initiates movement only if a sufficient swipe is detected
     if (dx < -28) { this.controls.left = true; this.controls.right = false; this.controls.jump = false; }
     else if (dx > 28) { this.controls.right = true; this.controls.left = false; this.controls.jump = false; }
     else if (dy < -22) { this.controls.jump = true; }
