@@ -60,7 +60,12 @@
   </div>
 
   <!-- Main game canvas -->
-  <div class="game-canvas-wrapper">
+  <div
+    class="game-canvas-wrapper"
+    [style.pointerEvents]="showMenu || showGameOver || showLevelComplete || showInstructions ? 'none' : 'auto'"
+    [style.filter]="showMenu || showGameOver || showLevelComplete || showInstructions ? 'blur(1.6px) grayscale(0.17)' : 'none'"
+    [attr.aria-hidden]="showMenu || showGameOver || showLevelComplete || showInstructions ? 'true' : null"
+  >
     <app-game-canvas
       (gameOver)="menuService.onGameOver($event)"
       (levelComplete)="menuService.onLevelComplete($event)">

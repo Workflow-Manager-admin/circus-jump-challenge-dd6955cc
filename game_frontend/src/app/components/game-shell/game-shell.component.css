@@ -66,6 +66,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Dim background behind overlays */
+  background: rgba(24,15,36,0.25);
 }
 .game-modal {
   background: rgba(27,8,54,0.82);

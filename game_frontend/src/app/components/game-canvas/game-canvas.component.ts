@@ -54,31 +54,38 @@ export class GameCanvasComponent implements AfterViewInit {
     }
   }
 
+  private isGameInputDisabled = false;
+
   loop() {
+    // If game over or level complete, stop updating/render loop
+    if (this.gameSvc.state.isGameOver || this.gameSvc.state.isLevelComplete) {
+      // Stop input during overlays.
+      this.isGameInputDisabled = true;
+      if (this.gameSvc.state.isGameOver) {
+        this.audioSvc.stopMusic();
+        this.gameOver.emit(this.gameSvc.state.score);
+      }
+      if (this.gameSvc.state.isLevelComplete) {
+        this.audioSvc.playLevelComplete();
+        this.levelComplete.emit(this.gameSvc.state.score);
+      }
+      if (typeof globalThis !== 'undefined' && typeof globalThis.cancelAnimationFrame === 'function') {
+        globalThis.cancelAnimationFrame(this.animFrame);
+      }
+      return;
+    } else {
+      this.isGameInputDisabled = false;
+    }
     this.gameSvc.update();
     this.gameSvc.render();
-    if (this.gameSvc.state.isGameOver) {
-      this.audioSvc.stopMusic();
-      this.gameOver.emit(this.gameSvc.state.score);
-      if (typeof globalThis !== 'undefined' && typeof globalThis.cancelAnimationFrame === 'function') {
-        globalThis.cancelAnimationFrame(this.animFrame);
-      }
-      return;
-    }
-    if (this.gameSvc.state.isLevelComplete) {
-      this.audioSvc.playLevelComplete();
-      this.levelComplete.emit(this.gameSvc.state.score);
-      if (typeof globalThis !== 'undefined' && typeof globalThis.cancelAnimationFrame === 'function') {
-        globalThis.cancelAnimationFrame(this.animFrame);
-      }
-      return;
-    }
+
     if (typeof globalThis !== 'undefined' && typeof globalThis.requestAnimationFrame === 'function') {
       this.animFrame = globalThis.requestAnimationFrame(() => this.loop());
     }
   }
 
   startGame() {
+    this.isGameInputDisabled = false;
     this.gameSvc.init();
     this.audioSvc.stopMusic();
     this.audioSvc.playMusic();
@@ -90,6 +97,11 @@ export class GameCanvasComponent implements AfterViewInit {
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
+    // Only allow input if game is active
+    if (this.isGameInputDisabled) {
+      // Allow only R and Enter for restart if needed (UI handles restart, but for robustness; could restrict further)
+      return;
+    }
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', ' ', 'Spacebar'].includes(event.key)) {
       this.gameSvc.onKeyDown(event.key);
       event.preventDefault();
@@ -97,13 +109,14 @@ export class GameCanvasComponent implements AfterViewInit {
   }
   @HostListener('document:keyup', ['$event'])
   onKeyUp(event: KeyboardEvent) {
+    if (this.isGameInputDisabled) return;
     this.gameSvc.onKeyUp(event.key);
     event.preventDefault();
   }
   @HostListener('touchstart', ['$event'])
-  onTouchStart(event: TouchEvent) { this.gameSvc.onTouchStart(event); }
+  onTouchStart(event: TouchEvent) { if (!this.isGameInputDisabled) this.gameSvc.onTouchStart(event); }
   @HostListener('touchmove', ['$event'])
-  onTouchMove(event: TouchEvent) { this.gameSvc.onTouchMove(event); }
+  onTouchMove(event: TouchEvent) { if (!this.isGameInputDisabled) this.gameSvc.onTouchMove(event); }
   @HostListener('touchend')
-  onTouchEnd() { this.gameSvc.onTouchEnd(); }
+  onTouchEnd() { if (!this.isGameInputDisabled) this.gameSvc.onTouchEnd(); }
 }
