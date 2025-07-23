@@ -1,0 +1,29 @@
+.canvas-outer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff6c7;
+  border-radius: 12px;
+  padding: 0.8em;
+  box-shadow: 0 4px 32px #ffd60070, 0 1px 6px #0005;
+  max-width: 700px;
+  margin: 0 auto;
+}
+canvas {
+  display: block;
+  width: 430px;
+  height: 240px;
+  max-width: 98vw;
+  max-height: 40vh;
+  /* force pixel-art look */
+  image-rendering: pixelated;
+  background: linear-gradient(to top, #fbeee6 60%, #ffd600 100%);
+  border: 3px solid #1565c0;
+  border-radius: 8px;
+}
+@media (max-width: 500px) {
+  canvas { width: 98vw; height: 35vw; min-height: 180px; }
+}
+.retro-border {
+  border: 5px double #e65100;
+}

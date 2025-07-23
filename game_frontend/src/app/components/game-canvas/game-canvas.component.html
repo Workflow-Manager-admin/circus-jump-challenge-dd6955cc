@@ -1,0 +1,15 @@
+<div class="canvas-outer retro-border" style="position:relative;">
+  <canvas #canvasRef tabindex="0" aria-label="Circus Game Canvas"></canvas>
+  <!-- Internal error overlay -->
+  <div
+    *ngIf="internalError"
+    style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:100;background:rgba(24,0,8,0.80);color:#ffd600;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto;font-family:'VT323',monospace;font-size:1.4em;">
+    <span style="font-size:2em; margin-bottom:0.45em;">⚠️ Internal Error</span>
+    <div style="padding:0.7em 1em;"><b>{{ internalError?.message }}</b></div>
+    <div style="margin-top:0.5em;max-width:70vw;overflow:scroll;font-size:0.97em;"
+         *ngIf="internalError?.error as err">
+      <small>{{ err | json }}</small>
+    </div>
+    <div style="margin-top:1em;color:#fff6c7;font-size:0.95em">Try restarting the game or reloading the page.</div>
+  </div>
+</div>

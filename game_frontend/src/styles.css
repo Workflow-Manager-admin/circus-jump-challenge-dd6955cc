@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Inter:wght@400;600&display=swap');
+
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --primary: #e65100;
+  --secondary: #1565c0;
+  --accent: #ffd600;
+  --retro-font: 'VT323', 'Press Start 2P', monospace, Arial;
+}
+html, body {
+  background: #fff6e9;
+  min-height: 100vh;
+  height: 100%;
+  margin: 0; padding: 0;
+}
+body {
+  font-family: var(--retro-font);
+  color: #22007b;
+}
+button, .retro-btn {
+  font-family: 'VT323', 'Press Start 2P', monospace, Arial;
+  letter-spacing: 1px;
+}
