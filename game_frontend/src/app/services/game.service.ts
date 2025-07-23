@@ -151,7 +151,16 @@ export class GameService {
       st.player.jumping = true;
       st.player.vy = -7.7;
       st.player.jumpTime = 0;
-      this.parent.audio.playJump();
+      // Defensive: ensure audio object exists before calling playJump
+      if (this.parent && this.parent.audio && typeof this.parent.audio.playJump === 'function') {
+        this.parent.audio.playJump();
+      } else {
+        // Optionally log warning for debugging
+        console.warn('[CircusGame] Audio service is missing or misconfigured (cannot call playJump).', {
+          parent: this.parent,
+          audio: this.parent?.audio
+        });
+      }
     }
     if (st.player.jumping) {
       st.player.jumpTime++;
@@ -188,12 +197,20 @@ export class GameService {
             globalThis.localStorage.setItem('circus_highscore', '' + st.highScore);
           }
         }
-        this.parent.audio.playDeath();
+        if (this.parent && this.parent.audio && typeof this.parent.audio.playDeath === 'function') {
+          this.parent.audio.playDeath();
+        } else {
+          console.warn('[CircusGame] Audio service is missing or misconfigured (cannot call playDeath).');
+        }
       }
       if (o.active && (st.player.x-st.worldOffset > o.x+o.width)) {
         st.score += (o.kind==='fire'? 30 : 40);
         o.active = false;
-        this.parent.audio.playScore();
+        if (this.parent && this.parent.audio && typeof this.parent.audio.playScore === 'function') {
+          this.parent.audio.playScore();
+        } else {
+          console.warn('[CircusGame] Audio service is missing or misconfigured (cannot call playScore).');
+        }
       }
     });
     if (st.player.x+st.worldOffset > st.winLine-8) {
